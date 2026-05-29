@@ -6,16 +6,22 @@ import plotly.express as px
 # 1. PAGE CONFIGURATION
 st.set_page_config(page_title="SkyCast Pro", layout="wide")
 
-# 2. CSS STYLING
+# 2. CSS STYLING (Forced Dark Text & Clean Mobile Layout)
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #87CEEB 0%, #E0F7FA 100%); }
     [data-testid="stSidebar"] { background: linear-gradient(180deg, #87CEEB 20%, #E0F7FA 100%); }
-    [data-testid="stMetric"] { 
-        background-color: rgba(255, 255, 255, 0.6); 
+    
+    /* Metrics and Chart containers */
+    [data-testid="stMetric"], .stPlotlyChart { 
+        background-color: rgba(255, 255, 255, 0.7); 
         padding: 15px; 
         border-radius: 15px; 
-        color: #333; 
+    }
+    
+    /* Force text to be black regardless of dark mode */
+    [data-testid="stMetric"] div, [data-testid="stMetric"] label, .stPlotlyChart {
+        color: #000000 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -26,7 +32,7 @@ def get_weather_data(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,pressure_msl&forecast_days=1"
     return requests.get(url).json()
 
-# 4. DATA SETUP
+# 4. CONFIGURATION
 cities_data = {
     "Nairobi": (-1.2921, 36.8219), "Nakuru": (-0.3031, 36.0800),
     "Naivasha": (-0.7173, 36.4313), "Kisumu": (-0.1022, 34.7617),
@@ -64,12 +70,12 @@ for metric in metrics:
         
         st.metric(metric, f"{val:.1f}{unit_label}")
         
-        # Mobile-friendly static chart configuration
+        # Static chart configuration (no zoom/toolbar)
         config = {'displayModeBar': False, 'staticPlot': True}
         fig = px.line(df, x='time', y=col_name)
         fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', 
                           height=200, margin=dict(l=0, r=0, t=10, b=0),
-                          xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='lightgray'))
+                          xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='gray'))
         
         st.plotly_chart(fig, use_container_width=True, config=config)
         st.divider()
