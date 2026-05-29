@@ -6,7 +6,7 @@ import plotly.express as px
 # 1. PAGE CONFIGURATION
 st.set_page_config(page_title="SkyCast Pro", layout="wide")
 
-# 2. CSS STYLING (Forced Dark Text & Clean Mobile Layout)
+# 2. CSS STYLING
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #87CEEB 0%, #E0F7FA 100%); }
@@ -14,13 +14,13 @@ st.markdown("""
     
     /* Metrics and Chart containers */
     [data-testid="stMetric"], .stPlotlyChart { 
-        background-color: rgba(255, 255, 255, 0.7); 
+        background-color: rgba(255, 255, 255, 0.8) !important; 
         padding: 15px; 
         border-radius: 15px; 
     }
     
-    /* Force text to be black regardless of dark mode */
-    [data-testid="stMetric"] div, [data-testid="stMetric"] label, .stPlotlyChart {
+    /* Force ALL text to be black regardless of dark mode */
+    .stMetric, .stMetric label, .stMetric div, .stPlotlyChart {
         color: #000000 !important;
     }
     </style>
@@ -70,12 +70,19 @@ for metric in metrics:
         
         st.metric(metric, f"{val:.1f}{unit_label}")
         
-        # Static chart configuration (no zoom/toolbar)
+        # High-Contrast chart configuration
         config = {'displayModeBar': False, 'staticPlot': True}
         fig = px.line(df, x='time', y=col_name)
-        fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', 
-                          height=200, margin=dict(l=0, r=0, t=10, b=0),
-                          xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor='gray'))
+        fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)', 
+            paper_bgcolor='rgba(0,0,0,0)', 
+            height=200, 
+            margin=dict(l=0, r=0, t=10, b=0),
+            xaxis=dict(showgrid=False, tickfont=dict(color='black')),
+            # Explicitly setting gridcolor to black for visibility
+            yaxis=dict(showgrid=True, gridcolor='black', tickfont=dict(color='black')),
+            font=dict(color='black')
+        )
         
         st.plotly_chart(fig, use_container_width=True, config=config)
         st.divider()
